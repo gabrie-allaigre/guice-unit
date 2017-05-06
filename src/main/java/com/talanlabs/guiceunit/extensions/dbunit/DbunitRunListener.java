@@ -15,15 +15,15 @@ public class DbunitRunListener extends AbstractTestListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbunitRunListener.class);
 
-    private final DbSessionManager sqlSessionManager;
+    private final DbSessionManager dbSessionManager;
 
     private DbunitDataset dbunitDataset;
 
     @Inject
-    public DbunitRunListener(DbSessionManager sqlSessionManager) {
+    public DbunitRunListener(DbSessionManager dbSessionManager) {
         super();
 
-        this.sqlSessionManager = sqlSessionManager;
+        this.dbSessionManager = dbSessionManager;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class DbunitRunListener extends AbstractTestListener {
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
         if (dbunitDataset != null) {
-            sqlSessionManager.start();
+            dbSessionManager.open();
 
             execute(dbunitDataset.value(), dbunitDataset.beforeType());
         }
@@ -45,7 +45,7 @@ public class DbunitRunListener extends AbstractTestListener {
         if (dbunitDataset != null) {
             execute(dbunitDataset.value(), dbunitDataset.afterType());
 
-            sqlSessionManager.rollbackAndClose();
+            dbSessionManager.close();
         }
     }
 
@@ -62,7 +62,7 @@ public class DbunitRunListener extends AbstractTestListener {
 
         IDatabaseConnection dbUnitConnection = null;
         try {
-            dbUnitConnection = new DatabaseConnection(sqlSessionManager.getConnection());//new DatabaseDataSourceConnection(dataSource);
+            dbUnitConnection = new DatabaseConnection(dbSessionManager.getConnection());//new DatabaseDataSourceConnection(dataSource);
 
             for (String value : values) {
                 IDataSet dataSet = xmlDSBuilder.build(DbunitRunListener.class.getClassLoader().getResourceAsStream(value));
