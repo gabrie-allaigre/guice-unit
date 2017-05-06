@@ -5,14 +5,14 @@ import java.sql.Connection;
 public interface DbSessionManager {
 
     /**
-     * Start session
+     * Open session
      */
-    void start();
+    void open();
 
     /**
-     * Rollback and close session
+     * Close session
      */
-    void rollbackAndClose();
+    void close();
 
     /**
      * @return get a connection
