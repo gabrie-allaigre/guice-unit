@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GuiceJunit4ClassRunner extends BlockJUnit4ClassRunner {
 
@@ -96,11 +95,12 @@ public class GuiceJunit4ClassRunner extends BlockJUnit4ClassRunner {
             e.printStackTrace();
         }
 
-        List<RunListenerDelegate> ls = this.testListeners.stream().map(testListener -> new RunListenerDelegate(testListener, testContext)).collect(Collectors.toList());
-        ls.forEach(notifier::addListener);
+        RunListenerDelegate runListenerDelegate = new RunListenerDelegate(testListeners, testContext);
+
+        notifier.addListener(runListenerDelegate);
 
         super.run(notifier);
 
-        ls.forEach(notifier::removeListener);
+        notifier.removeListener(runListenerDelegate);
     }
 }
